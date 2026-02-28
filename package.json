@@ -1,0 +1,20 @@
+{
+  "name": "focusflow-deriv-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for real-time Deriv synthetic index price alerts",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "check": "node --check src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "node-telegram-bot-api": "^0.66.0",
+    "ws": "^8.18.0"
+  }
+}
