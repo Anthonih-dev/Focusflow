@@ -16,7 +16,7 @@ function registerCommands(bot, db, deriv) {
 
   bot.onText(/\/start/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Welcome to FocusFlow! Use /help for commands.');
-    if (!db.getUser(msg.chat.id)) db.upsertUser({ chat_id: msg.chat.id });
+    if (!db.getUser(msg.chat.id)) db.ensureUser(msg.chat.id);
   });
 
   bot.onText(/\/help/, (msg) => {
@@ -39,10 +39,12 @@ function registerCommands(bot, db, deriv) {
   });
 
   // general alert creation syntax helper
-  function addAlert(msg, type, symbol, params) {    // ensure user exists (create if not)
+  function addAlert(msg, type, symbol, params) {
+    // ensure user exists (create if not)
     if (!db.getUser(msg.chat_id)) {
-      db.upsertUser({ chat_id: msg.chat_id });
-    }    // avoid creating the same alert twice in a row
+      db.ensureUser(msg.chat_id);
+    }
+    // avoid creating the same alert twice in a row
     const existing = db.listAlerts(msg.chat.id).find(a =>
       a.type === type && a.symbol === symbol && JSON.stringify(a.params) === JSON.stringify(params)
     );

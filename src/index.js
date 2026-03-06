@@ -15,6 +15,12 @@ const deriv = new DerivSocket({ url: process.env.DERIV_WS_URL });
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 bot.on('polling_error', (err) => {
+  // the 409 code means another getUpdates request is running (e.g. a second
+  // container started). We can log a warning but treat it as non-fatal.
+  if (err.code === 'ETELEGRAM' && err.response && err.response.body && err.response.body.error_code === 409) {
+    console.warn('Telegram polling conflict detected (another instance?) - ignoring');
+    return;
+  }
   console.error('Telegram polling error', err);
 });
 

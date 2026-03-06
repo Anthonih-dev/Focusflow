@@ -120,18 +120,24 @@ class DB {
     return this.stmts.getEnabledAlerts.all();
   }
 
+  // ensure a user row exists with optional settings; merges with existing row
   upsertUser(record) {
     const row = {
       chat_id: String(record.chat_id),
-      symbol: record.symbol || null,
-      threshold: record.threshold === undefined ? null : record.threshold,
-      cooldown: record.cooldown === undefined ? null : record.cooldown,
-      alerts_enabled: record.alerts_enabled ? 1 : 0,
-      last_alert_type: record.last_alert_type || null,
-      last_alert_price: record.last_alert_price || null,
-      last_alert_at: record.last_alert_at || null
+      default_cooldown: record.default_cooldown === undefined ? null : record.default_cooldown,
+      alerts_enabled: record.alerts_enabled === undefined ? 1 : (record.alerts_enabled ? 1 : 0),
+      autoremove: record.autoremove === undefined ? 0 : (record.autoremove ? 1 : 0),
+      risk_size: record.risk_size === undefined ? null : record.risk_size,
+      risk_percent: record.risk_percent === undefined ? null : record.risk_percent,
+      risk_points: record.risk_points === undefined ? null : record.risk_points
     };
     return this.stmts.upsertUser.run(row);
+  }
+
+  // convenience helper used by commands to make sure a user exists
+  ensureUser(chatId) {
+    // upsertUser handles defaults
+    return this.upsertUser({ chat_id: chatId });
   }
 
   setSymbol(chatId, symbol) {
