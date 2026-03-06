@@ -1,0 +1,19 @@
+{
+  "name": "focusflow",
+  "version": "0.1.0",
+  "description": "Telegram trading assistant connecting to Deriv WebSocket API",
+  "main": "src/index.js",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --watch src --exec node src/index.js",
+    "simulate": "node test/simulate_ticks.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.4.0",
+    "dotenv": "^16.0.0",
+    "node-telegram-bot-api": "^0.61.0",
+    "ws": "^8.13.0"
+  },
+  "license": "MIT"
+}
