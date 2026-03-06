@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Focus Flow</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .app {
+      background-color: #1e1e2f;
+      text-align: center;
+      padding: 2rem;
+      border-radius: 25px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    #timer {
+      font-size: 3rem;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: royalblue;
+      color: white;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0077cc;
+    }
+
+    input {
+      width: 80px;
+      padding: 5px;
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+
+    #status {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #aadfff;
+    }
+
+}
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <h2>Focus Flow</h2>
+    <p>Set your focus time (minutes):</p>
+    <input id="minutes" type="number" min="1" max="120" value="25">
+    <div id="status">Focus Time 💪</div>
+    <div id="timer">25:00</div>
+
+    <div class="buttons">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <audio id="alarmSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+  </audio>
+<footer class="footer">
+<p>Built by <strong>Smartcrypto</strong> • Powered by <strong>ZENO Tech</strong></p>
+<p class="footer-note">Focus Flow © 2026 — Stay consistent, not perfect.</p>
+</footer>
+  <script>
+    const timerDisplay = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const alarm = document.getElementById("alarmSound");
+    const minutesInput = document.getElementById("minutes");
+    const statusText = document.getElementById("status");
+
+    let time = 0;
+    let interval = null;
+    let isWorkTime = true;
+
+    function updateTimer() {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    }
+
+    function startTimer() {
+      if (interval) return;
+
+      if (time === 0) {
+        time = Number(minutesInput.value) * 60;
+        if (time <= 0) return;
+        updateTimer();
+      }
+
+      interval = setInterval(() => {
+        if (time > 0) {
+          time--;
+          updateTimer();
+        } else {
+          clearInterval(interval);
+          interval = null;
+
+          alarm.currentTime = 0;
+          alarm.play().catch(() => {
+            console.log("Audio blocked — user must interact first.");
+          });
+
+          if (isWorkTime) {
+            isWorkTime = false;
+            time = 5 * 60;
+            document.body.style.background = "#1a3c2e";
+            statusText.textContent = "Break Time 🌿";
+          } else {
+            isWorkTime = true;
+            time = Number(minutesInput.value) * 60;
+            document.body.style.background = "#0d1117";
+            statusText.textContent = "Focus Time 💪";
+          }
+
+          updateTimer();
+          startTimer();
+        }
+      }, 1000);
+    }
+
+    startBtn.addEventListener("click", () => {
+      alarm.play().then(() => {
+        alarm.pause();
+        alarm.currentTime = 0;
+      }).catch(() => {});
+      startTimer();
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      clearInterval(interval);
+      interval = null;
+    });
+
+    resetBtn.addEventListener("click", () => {
+      clearInterval(interval);
+      interval = null;
+      isWorkTime = true;
+      time = Number(minutesInput.value) * 60;
+      updateTimer();
+      alarm.pause();
+      alarm.currentTime = 0;
+      document.body.style.background = "#0d1117";
+      statusText.textContent = "Focus Time 💪";
+    });
+
+    updateTimer();
+  </script>
+</body>
+</html>
