@@ -39,8 +39,10 @@ function registerCommands(bot, db, deriv) {
   });
 
   // general alert creation syntax helper
-  function addAlert(msg, type, symbol, params) {
-    // avoid creating the same alert twice in a row
+  function addAlert(msg, type, symbol, params) {    // ensure user exists (create if not)
+    if (!db.getUser(msg.chat_id)) {
+      db.upsertUser({ chat_id: msg.chat_id });
+    }    // avoid creating the same alert twice in a row
     const existing = db.listAlerts(msg.chat.id).find(a =>
       a.type === type && a.symbol === symbol && JSON.stringify(a.params) === JSON.stringify(params)
     );
